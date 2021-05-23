@@ -120,22 +120,74 @@ describe('Basic user flow for SPA ', () => {
     // define and implement test13: On the home page the <body> element should not have any class attribute 
     let className = await page.$eval('body', e => e.className);
     expect(className).toBe("");
-  });
+  }, 5000);
 
-   it('test14: Verify the url is correct when clicking on the second entry')
+   it('test14: Verify the url is correct when clicking on the second entry', async () => {
+      // define and implement test14: Verify the url is correct when clicking on the second entry
+      let entry = await page.$$('journal-entry');
+      let second = entry[1];
+      await second.click(); 
+      await page.waitForTimeout(500);
+      let url = await page.url();
+      console.log(url);
+      let valid = url.includes('/#entry2');
+      expect(valid).toBeTruthy();
+   });
   
 
+   it('test15: Verify the title is current when clicking on the second entry', async () => {
+      // define and implement test15: Verify the title is current when clicking on the second entry
+      let title = await page.$eval('header h1', e => e.textContent);
+      expect(title).toBe('Entry 2');
+   });
+
+
+   it('test16: Verify the entry page contents is correct when clicking on the second entry', async () => {
+     // define and implement test16: Verify the entry page contents is correct when clicking on the second entry
+    let entryPage = await page.$eval('body entry-page', e => e.entry);
+    let content = {
+        title: 'Run, Forrest! Run!',
+        date: '4/26/2021',
+        content: "Mama always said life was like a box of chocolates. You never know what you're gonna get.",
+        image: {
+          src: 'https://s.abcnews.com/images/Entertainment/HT_forrest_gump_ml_140219_4x3_992.jpg',
+          alt: 'forrest running'
+        }
+    }
+    expect(entryPage).toMatchObject(content);
+    
+   });
+
+   it('test 17: test hitting the header returns to the default view', async () => {
+      await page.click('header img');
+      await page.click('header h1');
+      let title = await page.$eval('header h1', e => e.textContent);
+      expect(title).toBe('Journal Entries');
+   },10000);
   
+   it('test 18: test back goes from default to settings', async () => {
+      await page.goBack();
+      let title = await page.$eval('header h1', e => e.textContent);
+      expect(title).toBe('Settings');
+   });
 
-  // define and implement test14: Verify the url is correct when clicking on the second entry
+   it('test 19: test go forward', async () => {
+    await page.goForward();
+    let title = await page.$eval('header h1', e => e.textContent);
+    expect(title).toBe('Journal Entries');
+   });
 
-
-  // define and implement test15: Verify the title is current when clicking on the second entry
-
-
-  // define and implement test16: Verify the entry page contents is correct when clicking on the second entry
-
-
+   it('test 20: test that audio gets deleted when opening an entry that does not have audio', async () => {
+    let entries = await page.$$('journal-entry');
+    let fourth = entries[3];
+    let third = entries[2];
+    await fourth.click();
+    await page.goBack();
+    await third.click();
+    let entry = await page.$eval('body entry-page', e => e.entry);
+    let audio = entry.audio;
+    expect(audio).toBeUndefined();
+   }, 10000);
   // create your own test 17
 
   // create your own test 18

@@ -26,9 +26,8 @@
     "url": "https://github.com/sjramirez/Lab8/issues"
   },
   "homepage": "https://github.com/sjramirez/Lab8#readme",
-
   "jest": {
     "preset": "jest-puppeteer",
     "verbose": true
- }
+  }
 }
